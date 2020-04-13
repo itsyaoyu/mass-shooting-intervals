@@ -1,0 +1,228 @@
+---
+title: 'Milestone #6'
+author: "Yao Yu"
+date: "4/3/2020"
+output: bookdown::pdf_document2
+bibliography: bib.bib
+link_citations: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+library(tidyverse)
+library(readxl)
+library(janitor)
+library(tinytex)
+library(bookdown)
+library(gt)
+library(knitr)
+library(rstanarm)
+library(broom)
+library(stargazer)
+library(ggthemes)
+library(cowplot)
+```
+
+# GitHub
+
+The paper I am choosing is "What have we learned from the time trend of mass shootings in the U.S.?" by Ping-I Lin, Lin Fei, Drew Barzman, and M. Hossain. @paper All analysis for this paper should be available in the raw-data folder. While we don't have the code originally used in the paper, the graphics are not super complicated to recreate. Please refer to the Github repository of my final project for further information. [^1]
+
+\newpage
+
+# Beautiful Graphics
+
+Figure 1 highlights all the mass shootings within the Mother Jones' dataset. The number of fatalities is proportional to the size of the circles.
+
+```{r figure 1}
+
+# Reading in the data, using head(100) to get the 100 mass shootings that we
+# want and filtering longitude > -140 to remove a shooting in Hawaii that is not
+# present in the figure created in the paper. Clean names to get better column
+# names.
+
+data <- read_xlsx("../raw-data/Mother Jones - Mass Shootings Database 1982 - 2018.xlsx") %>%
+  head(100) %>%
+  filter(longitude > -140) %>%
+  clean_names()
+
+# Getting a map of the United States using map_data, from the ggplot2 package
+
+usa <- map_data("state")
+
+data %>%
+  ggplot() +
+  geom_polygon(data = usa, aes(x = long, y = lat, group = group), fill = "white", colour = "black") +
+  geom_point(data = data, aes(x = longitude, y = latitude, size = fatalities), color = "red", shape = 1, show.legend = FALSE) +
+  scale_size(range = c(0, 12)) +
+  theme_void() +
+  labs(caption = "Figure 1. Geographic locations of shootings and respective fatalities (proportional to circle diameter) are presented.")
+
+```
+
+\newpage
+
+I will be recreating Figure 2 in the paper: Interval time between mass shootings and its GAM fit for trend is shown. This data is originally from Mother Jones' Website. @motherjones It includes 100 mass shooting in the United States from "January 1982 to May 2018". @paper
+
+```{r figure 2}
+
+# Reading in the data, using head(100) to get the 100 mass shootings that we
+# want and clean names to get better column names. Using drop NA to remove one
+# row with NA interval
+
+data <- read_xlsx("../raw-data/Mother Jones - Mass Shootings Database 1982 - 2018.xlsx") %>%
+  head(100) %>%
+  clean_names() %>%
+  drop_na(interval) %>%
+  mutate(date = as.Date(date))
+
+dates <- as.Date(c("1982-07-01", "1988-07-01", "1994-07-01", "2000-07-01", "2006-07-01", "2012-07-01", "2018-07-01"))
+
+# Making the graphic showing inter-incidence interval (days) versus Date of all
+# the shootings. I can't seem to get the first date to show up though...been
+# trying for an hour now.
+
+data %>%
+  ggplot(aes(x = date, y = interval)) +
+  geom_point(shape = 1, size = 2) +
+  scale_y_continuous(breaks = c(2, 5, 10, 20, 50, 100, 200, 500, 1000), trans = "log") +
+  scale_x_date(breaks = dates, date_labels = "%m/%Y") +
+  geom_smooth(method = "loess", formula = y ~ x, se = FALSE) +
+  theme_classic() +
+  labs(x = "Date",
+       y = "Inter-incidence Interval (days)",
+       caption = "Figure 2. Interval time between mass shootings and its GAM fit for trend is shown.")
+
+```
+
+This graphic shows the interval between shootings from 1982 to 2018, with a trendline that shows a general downward trend decreasing the time interval from 200ish to 20ish. This could be a cause for concern because this could mean that more mass shootings are occurring now and this number will increase. 
+
+\newpage
+
+# Online interest Graphics
+
+This is a replication of Figure 3 which shows two plots related to online interest of mass shootings. The first graph highlights the trend between shooting interval and media coverage density. The second graph shows the trend between shooting interval and online search interest.
+
+```{r figure 3}
+
+# Reading in the data, doing head(65) because the rows below that have NA values
+
+data_3 <- read_xlsx("../raw-data/Mother Jones - Mass Shootings Database 1982 - 2018.xlsx") %>%
+  clean_names() %>%
+  head(65) %>%
+  mutate(log_media_density = as.numeric(log_media_density))
+
+data_3 %>%
+  ggplot(aes(x = log_media_density, y = log(interval))) +
+  geom_point() +
+  stat_smooth(method = "loess", span = 1) +
+  theme_classic() +
+  labs(y = "Between-shooting time interval",
+       x = "Media coverage density",
+       tag = "A") +
+  xlim(c(4, 11))
+
+data_3 %>%
+  ggplot(aes(x = log_transformed_search_interest, y = log(interval))) +
+  geom_point() +
+  stat_smooth(method = "loess", span = 1) +
+  theme_classic() +
+  labs(y = "Between-shooting time interval",
+       x = "Online search interest",
+       tag = "B") +
+  xlim(c(-2, 6))
+```
+
+\newpage
+
+# Replication
+
+I was able to replicate almost all of the graphs and tables. The only problem I had was replicating the regression model output (table 1). I just couldn't figure out how the authors used a zero-inflated Poisson regression model with population size as an offset. I'll be looking into that more, but I don't think it's likely that I'm going to be having any breakthroughs. Instead, I just made a Poisson model using stan_glm. I did not use population as an offset because either my coefficients or standard errors would result in crazy high or low numbers when I tried.
+
+# Proposed Extension
+
+First, I plan on updating figure 1, the map of mass shootings in the United States with more recent mass shootings that have occurred since this paper was published. What has changed? Have there been more mass shootings in some states over others?
+
+While the model used to try and predict the causes of mass shootings per state ended up being inconclusive due to too many variables in the given situations, the graphs looking at the interval between mass shootings was extremely interesting because it suggested a sharp decrease in the interval between mass shootings starting from 2006 forward. I plan on creating a model to try and estimate the expected values for dates in which mass shootings have occurred since this paper was published (roughly 2017 onward). Then, I will calculate the actual intervals between these mass shootings and see how well the model did in predicting the intervals between mass shootings. If the model did well, then how sharp is this decrease in interval and will it level out? If the model did not do well, then did it over predict or under predict. If it over predicted, then does that mean mass shootings are becoming more and more common? If so, then how concerned should Americans be? What has changed and what should we do to try and prevent this interval from decreasing even further? If it under predicted, then are mass shootings becoming less common? What might be the cause of this?
+
+In relation to looking at the intervals between shootings decreasing, I want to dig further into the relation between shooting time intervals and media coverage and online search interest. First, I would conduct a similar test to the one I did before, making two models and seeing how well those models can predict the shooting time interval based on these two factors. If the models do well, then we can dig deeper into how media coverage and the internet might be contributing to "copycat" mass shootings or inspiring other to participate in mass shootings. 
+
+In the paper, one limitation that the authors mentioned about their online coverage is that they did not include any data from social media coverage. As social media grows to play a bigger and bigger role in American lives, especially among children, it is crucial to look at data surrounding mass shootings on social media to see if more coverage on social media also has this negative trendline where more coverage leads to a decrease in shooting time interval. I might get data from looking at Twitter tweets regarding mass shootings or the overall trending topics throughout the years. However, this is already piling up to a lot of things to do for further research, so I might not be able to do all of it.
+
+\newpage
+
+# Overview
+
+This study resulted from limited published findings in the past and wanted to identify some risk factors associated with mass shootings. As a result, the authors wanted to answer three specific questions related to mass shootings in this paper. 1. "What are the population-level factors associated with the probability of mass shootings?" 2. "Is the incidence rate of mass shooting increasing during the past three decades?" 3. "Is the online media associated with the probable 'contagious effect'?" The specific factors looked at in this paper include: "state-level gun ownership rate, serious mental illness rate, poverty percentages, and gun law permissiveness". To evaluate if there was an increase in mass shootings in the past three decades, the authors looked at data regarding "mass shootings that occurred within the U.S. in the past 30 years". The authors of the paper defined mass shooting "as an act of firearm violence that resulted in at least four fatalities (not including the perpetrator), at the same time, or over a relatively short period of time in the case of shooting sprees". The contagious effect is like a copy cat effect, where if one mass shooting occurs, it promotes the increase of "copy cats" or more mass shootings in the time that follows.
+
+The authors chose Mother Jones' website as the main source of their data because they wanted to focus on "mass shootings unlike conventional homicidal behaviors". The state-level gun ownership data came from the WISQARS database associated with the CDC. @CDC The online popularity of mass shootings was found using the allintext function in Google. @allintext
+
+The authors used a Bayesian zero-inflated Poisson regression model to look at the factors and a non-homogenous Poisson regression model to look at whether mass shootings have increased over time. Given the results of the two models ran by the researchers, they found evidence that the "frequency of mass shootings has been increasing in recent three decades (p-value < 0.001)". They further discussed in the paper how the increasing media attention on mass shootings online might also be a factor in the decreasing intervals between shootings.
+
+\newpage
+
+# Bibliography
+
+<div id="refs"></div>
+
+\newpage
+
+# Appendix {-}
+
+```{r making the probability table}
+
+# Making the table using the formula they used
+
+prob_data <- tibble(months = c(1, 2, 3, 6, 9, 12)) %>%
+  mutate(constant_rate = 1 - exp(-0.227 * months),
+         regression_rate = 1 - exp(-0.468 * months)) 
+
+# Using gt to make a nice table.
+
+round(prob_data, digits = 3) %>%
+  gt() %>%
+  cols_align("center") %>%
+  cols_label(
+    months = "Within months (t)",
+    constant_rate = "P of a shooting Using constant rate",
+    regression_rate = "P of a shooting Using regression model"
+  )
+
+# Printing the table in the paper for comparions
+
+include_graphics("../graphics/table_2.PNG")
+```
+
+This table is pulled from the Digital Object Identifier (DOI) uploaded by the authors. @table2
+
+```{r table 1, results = "asis"}
+
+# This is my attempt to recreate the regression model output in figure 1. I've
+# been having trouble replicating the exact model because of missing/unknow data
+# regarding FS/S (firearm suicides) that is not in the dataset given.
+
+data_1 <- read_xlsx("../raw-data/Gun ownership data.xlsx")
+
+# Close! However, this model is not zero-inflated and it does not have population as an offset
+
+fit_1 <- stan_glm(Massshooting ~ Gun_ownership_rate + SeriousMentalIllness + pov_percentage + gun_laws, data = data_1, family = poisson, refresh = FALSE)
+
+# https://stats.idre.ucla.edu/r/dae/zip/ This was my attempt to replicate the
+# zero-inflated poisson model. Unsuccessful. Using the pscl package
+
+# fit_2 <- zeroinfl(Massshooting ~ Gun_ownership_rate + SeriousMentalIllness + pov_percentage + gun_laws, data = data_1, subset = pop_2000)
+
+stargazer(data.frame(fit_1), type = "latex",
+          summary.stat = c("mean", "sd"),
+          covariate.labels = c("Intercept", "FS/S", "Serious mental disorder rate", "Poverty rate", "Gun law permissiveness"),
+          title = "Effect of Treatment, Time Length, and their Interaction on Change in attitude")
+
+# Printing the table in the paper for comparions
+
+include_graphics("../graphics/table_1.PNG")
+
+```
+
+This table is pulled from the Digital Object Identifier (DOI) uploaded by the authors. @table1
+
+[^1]: [My GitHub](https://github.com/itsyaoyu/1006_milestone)
