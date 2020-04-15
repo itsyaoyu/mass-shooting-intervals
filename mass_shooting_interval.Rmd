@@ -34,9 +34,9 @@ This project can be found in my Github repository. [^1]
 
 # Introduction
 
-Research surrounding mass shootings and gun violence has been rising in interest, especially among the youth, as survivors of mass school shootings have begun to enter college @davidhogg However, as mentioned in the paper, there is still relatively little research around mass shootings that have been published. One cause of this shortage of research might be due to the relatively small amount of data out there related to mass shootings. Out of the three goals in Lin's paper was to look at a few risk factors such as gun ownernship and mental health to try and create a model to find a correlation between the factors and mass shootings. However, the results found were largely inconclusive. And one reason for this is just the small amount of data avaliable surrounding mass shootings. 
+Research surrounding mass shootings and gun violence has been rising in interest, especially among the youth, as survivors of mass school shootings have begun to enter college @davidhogg However, as mentioned in the paper, there is still relatively little research around mass shootings that have been published. One cause of this shortage of research might be due to the relatively small amount of data out there related to mass shootings. Out of the three goals in Lin's paper was to look at a few risk factors such as gun ownership and mental health to try and create a model to find a correlation between the factors and mass shootings. However, the results found were largely inconclusive. And one reason for this is just the small amount of data available surrounding mass shootings. 
 
-In comparison with other crimes, the actualy number of mass shootings is relatively small. Depending on how one defines as mass shootings, there are roughly only a handfull each year. A report done by the Everytown for Gun Safety Support Fund identified 194 mass shootings from 2009 to 2018, with is about 19 shootings a year. @everytown However, the traumas of mass shootings extend far beyond just the victims and families directly affected by mass shootings. With the increased amount of media coverage around mass school shootings specifically, more and more students are fearing their safety at school. A 2018 survey conducted by the Pew Research Center found that 57 percent of respondents of U.S. teens ages 13 to 17 were somewhat worried or very worried about a shooting that could happen at their school. @pewresearch 
+In comparison with other crimes, the actual number of mass shootings is relatively small. Depending on how one defines as mass shootings, there are roughly only a handful each year. A report done by the Everytown for Gun Safety Support Fund identified 194 mass shootings from 2009 to 2018, with is about 19 shootings a year. @everytown However, the traumas of mass shootings extend far beyond just the victims and families directly affected by mass shootings. With the increased amount of media coverage around mass school shootings specifically, more and more students are fearing their safety at school. A 2018 survey conducted by the Pew Research Center found that 57 percent of respondents of U.S. teens ages 13 to 17 were somewhat worried or very worried about a shooting that could happen at their school. @pewresearch 
 
 This increasing fear for safety among students is an alarming concern. With the importance of both mental and physical health for our children, there should be a lot more research going into mass shootings, their causes, and what we can do to decrease the number of them. In this project, I will be specifically using the time intervals between the shootings to determine if enough is being done to decrease the number of shootings and how the problem is worsening over time.
 
@@ -44,17 +44,17 @@ This increasing fear for safety among students is an alarming concern. With the 
 
 This study resulted from limited published findings in the past and wanted to identify some risk factors associated with mass shootings. As a result, the authors wanted to answer three specific questions related to mass shootings in this paper. 1. "What are the population-level factors associated with the probability of mass shootings?" 2. "Is the incidence rate of mass shooting increasing during the past three decades?" 3. "Is the online media associated with the probable 'contagious effect'?" The specific factors looked at in this paper include: "state-level gun ownership rate, serious mental illness rate, poverty percentages, and gun law permissiveness". To evaluate if there was an increase in mass shootings in the past three decades, the authors looked at data regarding "mass shootings that occurred within the U.S. in the past 30 years". The authors of the paper defined mass shooting "as an act of firearm violence that resulted in at least four fatalities (not including the perpetrator), at the same time, or over a relatively short period of time in the case of shooting sprees". The contagious effect is like a copy cat effect, where if one mass shooting occurs, it promotes the increase of "copy cats" or more mass shootings in the time that follows.
 
-The authors chose Mother Jones' website as the main source of their data because they wanted to focus on "mass shootings unlike conventional homicidal behaviors". The state-level gun ownership data came from the WISQARS database associated with the CDC. @CDC The online popularity of mass shootings was found using the allintext function in Google. @allintext
+The authors findings ultimately reached inconclusive evidence for looking at the relationship between risk factors and mass shootings. One of the main difficulties with looking at risk factors for mass shootings is the relatively small amount data on shootings that researchers have to look at. However, they did find the the interval between mass shootings has been steadily decreasing for the past three decades. Further, they found evidence of possible relationship between the increasing amount of media coverage of mass shootings and this interval decrease. However, the research done by Lin did not look at the specific number of social media posts mentioning mass shootings, only Google search results and Google trends. This is an area where research should be done because of the increasing popularity of social media, especially among the youth. Overall, the research done by Lin provided important information around the decreasing intervals which can be useful for further research to see how the interval trends have changed since the paper's publication.
 
-The authors used a Bayesian zero-inflated Poisson regression model to look at the factors and a non-homogenous Poisson regression model to look at whether mass shootings have increased over time. Given the results of the two models ran by the researchers, they found evidence that the "frequency of mass shootings has been increasing in recent three decades (p-value < 0.001)". They further discussed in the paper how the increasing media attention on mass shootings online might also be a factor in the decreasing intervals between shootings.
-
-# Data
+In the overall category of research related to mass shootings, there have been two areas of main focus, continuing to look at what risk factors relate to mass shootings the most and domestic violence restraining order (DVRO) prohibition laws. In the focus of looking at risk factors, many other papers have also reached inconclusive evidence on many of the same factors that Lin looked at. Other papers have cited similar a similar issue with the lack of data to provide any substantive conclusions on risk factors. However, a recent Webster et al. (2020) paper found that more firearm purchaser licensing requirements are likely to reduce the number of mass shootings as it makes it more difficult for high-risk individuals to purchase guns. @webster Regarding the focus on DVRO, there was a lot of excitement around a paper by Zeoli et al. (2017) because he had found evidence that DVRO laws can significantly reduce the number of shootings related to domestic violence. @zeoli2017 This would have been a huge finding since many mass shootings are related to domestic violence. However, the paper by Zeoli et al. was later retracted shortly after due to errors within dates they used which led to the significance of DVRO laws to fade. @zeoli2018b
 
 \newpage
 
 # Replication
 
-```{r figure 1}
+```{r figure 1, fig.height = 4}
+
+# Using fig.height to scale the graphic correctly when it prints to pdf
 
 # Reading in the data, using head(100) to get the 100 mass shootings that we
 # want and filtering longitude > -140 to remove a shooting in Hawaii that is not
@@ -203,7 +203,7 @@ stargazer(data.frame(fit_1), type = "latex",
 
 ```
 
-Table 1: This is a poisson model I created in attempt to replicate the zero-finlated poisson model in the paper. I was unable to fully replicate the model as the code for this paper was not made publically avaliable.
+Table 1: This is a poisson model I created in attempt to replicate the zero-inflated poisson model in the paper. I was unable to fully replicate the model as the code for this paper was not made publicly available.
 
 ```{r table 2}
 
@@ -228,4 +228,4 @@ round(prob_data, digits = 3) %>%
 Table 2: This table predicts the probability of at least one mass shooting within the given number of months using the trend the authors found in the paper
 
 
-[^1]: [My GitHub](https://github.com/itsyaoyu/1006_milestone)
+[^1]: [GitHub](https://github.com/itsyaoyu/1006_milestone)
