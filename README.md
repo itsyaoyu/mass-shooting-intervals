@@ -1,4 +1,4 @@
-# mass_shooting_interval
+# mass_shooting_intervals
 
 Project Summary
 ------
