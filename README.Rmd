@@ -1,0 +1,36 @@
+---
+title: "README"
+author: "Yao Yu"
+date: "4/28/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+library(tidyverse)
+library(janitor)
+library(plotly)
+```
+
+```{r map}
+
+data <- read_csv("raw-data/Mother Jones - Mass Shootings Database, 1982 - 2020.csv") %>%
+  filter(longitude > -140) %>%
+  clean_names()
+
+# Getting a map of the United States using map_data, from the ggplot2 package
+
+usa <- map_data("state")
+
+map <- data %>%
+  ggplot() +
+  geom_polygon(data = usa, aes(x = long, y = lat, group = group), fill = "white", colour = "black") +
+  geom_point(data = data, aes(x = longitude, y = latitude, size = fatalities), color = "red", shape = 1, show.legend = FALSE) +
+  scale_size(range = c(0, 12)) +
+  theme_void() +
+  labs(title = "Mass Shootings in the United States from 1982 to 2020",
+       caption = "Source: Mother Jones")
+
+```
+
