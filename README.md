@@ -6,6 +6,7 @@ Lin et al. ([2018](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6193640/)) found
 
 Repo Guide
 ------
++ /graphics : folder containing table 1 from the original paper, shown in my appendix
 + /raw-data : the raw data publicly available used by Lin et al.
 + What have we learned from the time trend of mass shootings in the U.S..pdf : PDF copy of the paper
 + bib.bib : bibliography of all the sources I used
